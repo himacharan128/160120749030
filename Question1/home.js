@@ -10,30 +10,24 @@ app.use(bodyParser.json());
 let clientID = "";
 let clientSecret = "";
 let authorizationToken = "";
-
-// Route to handle registration and authorization
 app.post("/train/register", async (req, res) => {
   const registrationData = req.body;
 
   try {
-    // Send registration data to the remote service for registration
     const registrationResponse = await axios.post(
       process.env.REGISTRATION_API_URL,
       registrationData
     );
 
-    // Store registration details for future use
     clientID = registrationResponse.data.clientID;
     clientSecret = registrationResponse.data.clientSecret;
 
-    // Send authorization data to the remote service for authentication
     const authResponse = await axios.post(process.env.AUTH_API_URL, {
       ...registrationData,
       clientID,
       clientSecret,
     });
 
-    // Store the access token for future use
     authorizationToken = authResponse.data.access_token;
     console.log("Authorization successful:", authorizationToken);
 
@@ -44,7 +38,6 @@ app.post("/train/register", async (req, res) => {
   }
 });
 
-// Route to fetch and process train data
 app.get("/train/trains", async (req, res) => {
   try {
     if (!authorizationToken) {
@@ -69,7 +62,6 @@ app.get("/train/trains", async (req, res) => {
   }
 });
 
-// Function to process train data
 function processTrainData(rawData) {
   const currentTime = new Date();
   const twelveHoursLater = new Date();
@@ -99,8 +91,6 @@ function processTrainData(rawData) {
 
   return processedData;
 }
-
-// Start the Express server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
